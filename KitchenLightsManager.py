@@ -2,10 +2,11 @@ import argparse
 import asyncio
 from typing import Dict
 import apikeys
+import time
 
 from govee_api_laggat import Govee, GoveeAbstractLearningStorage, GoveeLearnedInfo
 
-async def turnOnKitchenLight(api_key, my_learning_storage):
+async def kitchenOn(api_key, my_learning_storage):
     async with Govee(api_key, learning_storage=my_learning_storage) as govee:
             online = await govee.check_connection()
             devices, err = await govee.get_devices()
@@ -17,7 +18,7 @@ async def turnOnKitchenLight(api_key, my_learning_storage):
 
             success, err = await govee.turn_on(device)
 
-async def turnOffKitchenLight(api_key, my_learning_storage):
+async def kitchenOff(api_key, my_learning_storage):
     async with Govee(api_key, learning_storage=my_learning_storage) as govee:
             online = await govee.check_connection()
             devices, err = await govee.get_devices()
@@ -40,18 +41,39 @@ class YourLearningStorage(GoveeAbstractLearningStorage):
 
 
 # then
-your_learning_storage = YourLearningStorage()
+learning_storage = YourLearningStorage()
+
+def checkTime():
+    now = time.localtime()
+    current_time = time.strftime('%H:%M:%S', now)
+    hour = int(current_time[0] + current_time[1])
+    print("time is above 20 hundred ", hour >= 20)
+    return hour >= 20
+
+async def kitchenOn(args):
+    if checkTime():
+        # going async ...
+        loop = asyncio.get_event_loop()
+        try:
+            loop.run_until_complete(kitchenOff(args.api_key, learning_storage))
+        finally:
+            loop.close()
+
+async def kitchenOff(args):
+    if checkTime():
+        # going async ...
+        loop = asyncio.get_event_loop()
+        try:
+            loop.run_until_complete(kitchenOff(args.api_key, learning_storage))
+        finally:
+            loop.close()
 
 def main():
     parser = argparse.ArgumentParser(description="govee_api_laggat examples")
     parser.add_argument("--api-key", dest="api_key", type=str, required=True)
     args = parser.parse_args(['--api-key', apikeys.apikey])
 
-    # going async ...
-    loop = asyncio.get_event_loop()
-    try:
-        loop.run_until_complete(turnOffKitchenLight(args.api_key, your_learning_storage))
-    finally:
-        loop.close()
+    # kitchenOn(args)
+    time = checkTime()
 
 main()
