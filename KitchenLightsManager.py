@@ -73,8 +73,3 @@ def kitchenLightOff():
         loop.run_until_complete(kitchenOff(args.api_key, learning_storage))
     finally:
         loop.close()
-
-# def main():
-#     kitchenLightOff()
-
-# main()
