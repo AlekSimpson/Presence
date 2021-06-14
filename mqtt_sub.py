@@ -1,3 +1,4 @@
+from KitchenLightsManager import kitchenLightOn, kitchenLightOff
 import paho.mqtt.client as mqtt
 from Presence import lightMan
 import json
@@ -10,17 +11,17 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe(MQTT_PATH)
 
 def on_message(client, userdata, msg):
-    print(msg.topic + " " + str(msg.payload))
-    payload = json.loads(msg.payload)
+	print(msg.topic + " " + str(msg.payload))
+	payload = json.loads(msg.payload)
 
-    powered = ""
-    room = ""
+	powered = ""
+	room = ""
 
-    for key, value in payload.items():
-        powered = int(value)
-        room = int(key)
+	for key, value in payload.items():
+		powered = int(value)
+		room = int(key)
 
-    lightMan(room, powered)
+	lightMan(room, powered)
 
 client = mqtt.Client()
 client.on_connect = on_connect

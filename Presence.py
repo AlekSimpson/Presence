@@ -6,17 +6,7 @@ from KitchenLightsManager import kitchenLightOn, kitchenLightOff
 # Room functions: 0 - light off, 1 - light on
 
 def lightMan(room, powered):
-    kitchenFunctions = [kitchenLightOff, kitchenLightOn]
-    roomFunctions = [kitchenFunctions]
+	kitchenFunctions = [kitchenLightOff, kitchenLightOn]
+	roomFunctions = [kitchenFunctions]
 
-    print("test test testlkajdf la;kjdl;")
-    roomFunctions[room][powered]()
-
-# def main(looping):
-#     if looping:
-#         while True:
-#             loop()
-#     else:
-#         loop()
-#
-# main()
+	roomFunctions[room][powered]()
