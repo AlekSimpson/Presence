@@ -9,6 +9,7 @@ def lightMan(room, powered):
     kitchenFunctions = [kitchenLightOff, kitchenLightOn]
     roomFunctions = [kitchenFunctions]
 
+    print("test test testlkajdf la;kjdl;")
     roomFunctions[room][powered]()
 
 # def main(looping):
