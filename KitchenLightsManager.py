@@ -3,32 +3,35 @@ import asyncio
 from typing import Dict
 import apikeys
 import time
-
 from govee_api_laggat import Govee, GoveeAbstractLearningStorage, GoveeLearnedInfo
 
 async def kitchenOn(api_key, my_learning_storage):
-    async with Govee(api_key, learning_storage=my_learning_storage) as govee:
-            online = await govee.check_connection()
-            devices, err = await govee.get_devices()
-            devices = (
-                await govee.get_states()
-            )
-            cache_devices = govee.devices
-
-            for device in cache_devices:
-                success, eff = await govee.turn_on(device)
+	async with Govee(api_key, learning_storage=my_learning_storage) as govee:
+		online = await govee.check_connection()
+		devices, err = await govee.get_devices()
+		devices = (
+			await govee.get_states()
+		)
+		cache_devices = govee.devices
+		if devices[0].power_state != True:
+			for device in cache_devices:
+				success, eff = await govee.turn_on(device)
+		else:
+			print("already on")
 
 async def kitchenOff(api_key, my_learning_storage):
-    async with Govee(api_key, learning_storage=my_learning_storage) as govee:
-            online = await govee.check_connection()
-            devices, err = await govee.get_devices()
-            devices = (
-                await govee.get_states()
-            )
-            cache_devices = govee.devices
-
-            for device in cache_devices:
-                success, err = await govee.turn_off(device)
+	async with Govee(api_key, learning_storage=my_learning_storage) as govee:
+		online = await govee.check_connection()
+		devices, err = await govee.get_devices()
+		devices = (
+			await govee.get_states()
+		)
+		cache_devices = govee.devices
+		if devices[0].power_state != False:
+			for device in cache_devices:
+				success, err = await govee.turn_off(device)
+		else:
+			print("already off")
 
 class YourLearningStorage(GoveeAbstractLearningStorage):
     async def read(self) -> Dict[str, GoveeLearnedInfo]:
@@ -49,27 +52,19 @@ def checkTime():
     return hour >= 20
 
 def kitchenLightOn():
-    parser = argparse.ArgumentParser(description="govee_api_laggat examples")
-    parser.add_argument("--api-key", dest="api_key", type=str, required=True)
-    args = parser.parse_args(['--api-key', apikeys.apikey])
-
-    # if checkTime():
-    # going async ...
-    loop = asyncio.get_event_loop()
-    try:
-        loop.run_until_complete(kitchenOn(args.api_key, learning_storage))
-    finally:
-        loop.close()
+	parser = argparse.ArgumentParser(description="govee_api_laggat examples")
+	parser.add_argument("--api-key", dest="api_key", type=str, required=True)
+	args = parser.parse_args(['--api-key', apikeys.apikey])
+	# going async ...
+	# if checkTime():
+	asyncio.run(kitchenOn(args.api_key, learning_storage))
 
 def kitchenLightOff():
-    parser = argparse.ArgumentParser(description="govee_api_laggat examples")
-    parser.add_argument("--api-key", dest="api_key", type=str, required=True)
-    args = parser.parse_args(['--api-key', apikeys.apikey])
+	parser = argparse.ArgumentParser(description="govee_api_laggat examples")
+	parser.add_argument("--api-key", dest="api_key", type=str, required=True)
+	args = parser.parse_args(['--api-key', apikeys.apikey])
 
-    # if checkTime():
-    # going async ...
-    loop = asyncio.get_event_loop()
-    try:
-        loop.run_until_complete(kitchenOff(args.api_key, learning_storage))
-    finally:
-        loop.close()
+	# going async ...
+	# if checkTime():
+	asyncio.run(kitchenOff(args.api_key, learning_storage))
+
